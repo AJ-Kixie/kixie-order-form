@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kixie Order Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        .bid-input-container {
+            position: absolute;
+            top: 50%;
+            right: 40px;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .bid-input-container label {
+            font-size: 1.4em;
+            margin-bottom: 10px;
+            color: white;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .bid-input {
+            width: 140px;
+            padding: 12px 18px;
+            border: 3px solid rgba(255,255,255,0.4);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 1.3em;
+            font-weight: 600;
+            text-align: center;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .bid-input:focus {
+            outline: none;
+            border-color: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 0 15px rgba(255,255,255,0.3), inset 0 2px 5px rgba(0,0,0,0.2);
+            transform: scale(1.05);
+        }
+        .bid-input::-webkit-outer-spin-button,
+        .bid-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .bid-input {
+            -moz-appearance: textfield;
+        }
+        .bid-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 40px;
+        }
+        .billing-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .billing-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .billing-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .billing-option, .discount-option, .contract-option, .se-option {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        .billing-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        .billing-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .discount-option:hover {
+            border-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+        }
+        .discount-option.selected {
+            border-color: #27ae60;
+            background: #27ae60;
+            color: white;
+        }
+        .contract-option:hover {
+            border-color: #e67e22;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.2);
+        }
+        .contract-option.selected {
+            border-color: #e67e22;
+            background: #e67e22;
+            color: white;
+        }
+        .se-option:hover {
+            border-color: #8e44ad;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 68, 173, 0.2);
+        }
+        .se-option.selected {
+            border-color: #8e44ad;
+            background: #8e44ad;
+            color: white;
+        }
+        .billing-option h3, .discount-option h3, .contract-option h3, .se-option h3 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+        .billing-option .discount {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        .products-section {
+            margin-bottom: 30px;
+        }
+        .products-section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.5em;
+        }
+        .product-category {
+            margin-bottom: 30px;
+        }
+        .product-category h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e9ecef;
+            font-size: 1.2em;
+        }
+        .products-grid {
+            display: grid;
+            gap: 15px;
+        }
+        .product-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+        }
+        .product-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.1);
+        }
+        .product-name {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .product-price {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #27ae60;
+        }
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quantity-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+        .quantity-btn:hover {
+            background: #5a67d8;
+        }
+        .quantity-input {
+            width: 60px;
+            text-align: center;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 1em;
+        }
+        .product-total {
+            font-weight: 600;
+            color: #2c3e50;
+            min-width: 80px;
+            text-align: right;
+        }
+        .comments-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1em;
+            line-height: 1.5;
+            background: white;
+            color: #2c3e50;
+            resize: vertical;
+            min-height: 100px;
+            transition: all 0.3s ease;
+        }
+        .comments-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+        .comments-textarea::placeholder {
+            color: #adb5bd;
+        }
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        .summary h2 {
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+        }
+        .summary-row.total {
+            border-top: 1px solid rgba(255,255,255,0.3);
+            padding-top: 15px;
+            margin-top: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        .submit-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        @media (max-width: 768px) {
+            .product-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 10px;
+            }
+            .billing-options {
+                grid-template-columns: 1fr;
+            }
+            .bid-input-container {
+                position: static;
+                margin-bottom: 20px;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="bid-input-container">
+                <label for="bid-input">BID</label>
+                <input type="number" id="bid-input" class="bid-input" placeholder="12345" maxlength="5" max="99999" min="0" required oninput="updateBidSummary()">
+            </div>
+            <h1>Kixie Order Form</h1>
+            <p>Select your products and billing preferences</p>
+        </div>
+
+        <div class="content">
+            <div class="billing-section">
+                <h2>1. Select Billing Terms</h2>
+                <div class="billing-options">
+                    <div class="billing-option selected" data-period="1">
+                        <h3>Monthly</h3>
+                        <div class="discount">1 month</div>
+                    </div>
+                    <div class="billing-option" data-period="3">
+                        <h3>Quarterly</h3>
+                        <div class="discount">3 months</div>
+                    </div>
+                    <div class="billing-option" data-period="6">
+                        <h3>Semi Annual</h3>
+                        <div class="discount">6 months</div>
+                    </div>
+                    <div class="billing-option" data-period="12">
+                        <h3>Annual</h3>
+                        <div class="discount">12 months</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="billing-section">
+                <h2>2. Select Discount Rate</h2>
+                <div class="billing-options">
+                    <div class="discount-option selected" data-discount="0">
+                        <h3>No Discount</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0.10">
+                        <h3>10% Off</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0.15">
+                        <h3>15% Off</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0.20">
+                        <h3>20% Off</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0.25">
+                        <h3>25% Off</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0.30">
+                        <h3>30% Off</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0.40">
+                        <h3>40% Off</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0.50">
+                        <h3>50% Off</h3>
+                    </div>
+                    <div class="discount-option" data-discount="0">
+                        <h3>Custom</h3>
+                        <div class="discount-note">(Enter in comments)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="billing-section">
+                <h2>3. Select Contract Duration</h2>
+                <div class="billing-options">
+                    <div class="contract-option selected" data-contract="0">
+                        <h3>No Contract</h3>
+                    </div>
+                    <div class="contract-option" data-contract="4">
+                        <h3>4 Month Contract</h3>
+                    </div>
+                    <div class="contract-option" data-contract="6">
+                        <h3>6 Month Contract</h3>
+                    </div>
+                    <div class="contract-option" data-contract="12">
+                        <h3>12 Month Contract</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="billing-section">
+                <h2>4. Customer informed of completed SE work</h2>
+                <div class="billing-options">
+                    <div class="se-option selected" data-se="na">
+                        <h3>Not Applicable<br>(no SE work)</h3>
+                    </div>
+                    <div class="se-option" data-se="yes">
+                        <h3>Yes</h3>
+                    </div>
+                    <div class="se-option" data-se="no">
+                        <h3>No</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="products-section">
+                <h2>5. Add Products</h2>
+
+                <div class="product-category">
+                    <h3>Core Plans</h3>
+                    <div class="products-grid">
+                        <div class="product-item" data-price="15">
+                            <div class="product-name">Basic</div>
+                            <div class="product-price">$15/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="45">
+                            <div class="product-name">Integrated</div>
+                            <div class="product-price">$45/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="65">
+                            <div class="product-name">Professional</div>
+                            <div class="product-price">$65/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-category">
+                    <h3>Unlimited Plans</h3>
+                    <div class="products-grid">
+                        <div class="product-item" data-price="75">
+                            <div class="product-name">Integrated Unlimited</div>
+                            <div class="product-price">$75/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="95">
+                            <div class="product-name">Professional Unlimited</div>
+                            <div class="product-price">$95/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-category">
+                    <h3>PowerDialer Add-ons</h3>
+                    <div class="products-grid">
+                        <div class="product-item" data-price="50">
+                            <div class="product-name">PowerDialer 1</div>
+                            <div class="product-price">$50/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="70">
+                            <div class="product-name">PowerDialer 4</div>
+                            <div class="product-price">$70/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="90">
+                            <div class="product-name">PowerDialer 10</div>
+                            <div class="product-price">$90/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-category">
+                    <h3>Additional Services</h3>
+                    <div class="products-grid">
+                        <div class="product-item" data-price="50">
+                            <div class="product-name">ConnectionBoost (Local Presence)</div>
+                            <div class="product-price">$50/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="500">
+                            <div class="product-name">ConnectionBoost Premium/Tranche</div>
+                            <div class="product-price">$500/tranche</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="50">
+                            <div class="product-name">Call Transcription</div>
+                            <div class="product-price">$50/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="20">
+                            <div class="product-name">FTC Blocking</div>
+                            <div class="product-price">$20/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="120">
+                            <div class="product-name">AI Human Detect</div>
+                            <div class="product-price">$120/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-category">
+                    <h3>Number Products</h3>
+                    <div class="products-grid">
+                        <div class="product-item" data-price="5">
+                            <div class="product-name">Regular Number Products</div>
+                            <div class="product-price">$5/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                        <div class="product-item" data-price="5">
+                            <div class="product-name">US/CA Toll Free Number Product</div>
+                            <div class="product-price">$5/user</div>
+                            <div class="quantity-control">
+                                <button class="quantity-btn" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" class="quantity-input" value="0" min="0" onchange="updateTotal(this)">
+                                <button class="quantity-btn" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <div class="product-total">$0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="billing-section">
+                <h2>Comments</h2>
+                <textarea id="comments-input" class="comments-textarea" placeholder="Add any additional comments or notes here..." rows="4"></textarea>
+            </div>
+
+            <div class="summary">
+                <h2>Order Summary</h2>
+                <div class="summary-row">
+                    <span>BID:</span>
+                    <span id="summary-bid">-</span>
+                </div>
+                <div class="summary-row">
+                    <span>Monthly Subtotal:</span>
+                    <span id="subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Billing Terms:</span>
+                    <span id="billing-period">Monthly (1 month)</span>
+                </div>
+                <div class="summary-row">
+                    <span>Contract Duration:</span>
+                    <span id="contract-duration">No Contract</span>
+                </div>
+                <div class="summary-row">
+                    <span>Discount:</span>
+                    <span id="discount-amount">0%</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total:</span>
+                    <span id="total">$0.00</span>
+                </div>
+                <button class="submit-btn" onclick="submitOrder()">Submit Order</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+var currentBillingPeriod = 1;
+var currentDiscount = 0;
+var currentContract = 0;
+var currentSE = 'na';
+
+function updateBidSummary() {
+    var bidValue = document.getElementById('bid-input').value;
+    var summaryBid = document.getElementById('summary-bid');
+    summaryBid.textContent = bidValue || '-';
+}
+
+function updateBillingDisplay() {
+    var periodText = '';
+    if (currentBillingPeriod === 1) {
+        periodText = 'Monthly (1 month)';
+    } else if (currentBillingPeriod === 3) {
+        periodText = 'Quarterly (3 months)';
+    } else if (currentBillingPeriod === 6) {
+        periodText = 'Semi Annual (6 months)';
+    } else if (currentBillingPeriod === 12) {
+        periodText = 'Annual (12 months)';
+    }
+    document.getElementById('billing-period').textContent = periodText;
+}
+
+function updateContractDisplay() {
+    var contractText = '';
+    if (currentContract === 0) {
+        contractText = 'No Contract';
+    } else if (currentContract === 4) {
+        contractText = '4 Month Contract';
+    } else if (currentContract === 6) {
+        contractText = '6 Month Contract';
+    } else if (currentContract === 12) {
+        contractText = '12 Month Contract';
+    }
+    document.getElementById('contract-duration').textContent = contractText;
+}
+
+function changeQuantity(button, change) {
+    var input = button.parentElement.getElementsByClassName('quantity-input')[0];
+    var currentValue = parseInt(input.value) || 0;
+    var newValue = Math.max(0, currentValue + change);
+    input.value = newValue;
+    updateTotal(input);
+}
+
+function updateTotal(input) {
+    var productItem = input.parentElement.parentElement;
+    var price = parseFloat(productItem.getAttribute('data-price'));
+    var quantity = parseInt(input.value) || 0;
+    var total = price * quantity;
+    
+    var totalElement = productItem.getElementsByClassName('product-total')[0];
+    totalElement.textContent = '$' + total;
+    calculateTotal();
+}
+
+function calculateTotal() {
+    var subtotal = 0;
+    var productItems = document.getElementsByClassName('product-item');
+    
+    for (var i = 0; i < productItems.length; i++) {
+        var price = parseFloat(productItems[i].getAttribute('data-price'));
+        var quantity = parseInt(productItems[i].getElementsByClassName('quantity-input')[0].value) || 0;
+        subtotal += price * quantity;
+    }
+
+    var discountAmount = subtotal * currentDiscount;
+    var monthlyTotal = subtotal - discountAmount;
+    var billingTotal = monthlyTotal * currentBillingPeriod;
+
+    document.getElementById('subtotal').textContent = '$' + subtotal.toFixed(2);
+    
+    var discountPercentage = Math.round(currentDiscount * 100);
+    var discountText = discountPercentage + '%';
+    document.getElementById('discount-amount').textContent = discountText;
+    
+    document.getElementById('total').textContent = '$' + billingTotal.toFixed(2);
+    
+    updateContractDisplay();
+}
+
+function setupEventListeners() {
+    var billingOptions = document.getElementsByClassName('billing-option');
+    for (var i = 0; i < billingOptions.length; i++) {
+        billingOptions[i].onclick = function() {
+            var allOptions = document.getElementsByClassName('billing-option');
+            for (var j = 0; j < allOptions.length; j++) {
+                allOptions[j].classList.remove('selected');
+            }
+            this.classList.add('selected');
+            currentBillingPeriod = parseInt(this.getAttribute('data-period'));
+            updateBillingDisplay();
+            calculateTotal();
+        };
+    }
+
+    var discountOptions = document.getElementsByClassName('discount-option');
+    for (var i = 0; i < discountOptions.length; i++) {
+        discountOptions[i].onclick = function() {
+            var allOptions = document.getElementsByClassName('discount-option');
+            for (var j = 0; j < allOptions.length; j++) {
+                allOptions[j].classList.remove('selected');
+            }
+            this.classList.add('selected');
+            currentDiscount = parseFloat(this.getAttribute('data-discount'));
+            calculateTotal();
+        };
+    }
+
+    var contractOptions = document.getElementsByClassName('contract-option');
+    for (var i = 0; i < contractOptions.length; i++) {
+        contractOptions[i].onclick = function() {
+            var allOptions = document.getElementsByClassName('contract-option');
+            for (var j = 0; j < allOptions.length; j++) {
+                allOptions[j].classList.remove('selected');
+            }
+            this.classList.add('selected');
+            currentContract = parseInt(this.getAttribute('data-contract'));
+            calculateTotal();
+        };
+    }
+
+    var seOptions = document.getElementsByClassName('se-option');
+    for (var i = 0; i < seOptions.length; i++) {
+        seOptions[i].onclick = function() {
+            var allOptions = document.getElementsByClassName('se-option');
+            for (var j = 0; j < allOptions.length; j++) {
+                allOptions[j].classList.remove('selected');
+            }
+            this.classList.add('selected');
+            currentSE = this.getAttribute('data-se');
+        };
+    }
+}
+
+function submitOrder() {
+    var bidValue = document.getElementById('bid-input').value;
+    var commentsValue = document.getElementById('comments-input').value;
+    
+    if (!bidValue || bidValue.trim() === '') {
+        alert('Please enter a BID number before submitting your order.');
+        document.getElementById('bid-input').focus();
+        return;
+    }
+    
+    var orderData = {
+        bid: bidValue || '',
+        comments: commentsValue || '',
+        billingPeriod: currentBillingPeriod,
+        discount: currentDiscount,
+        contractDuration: currentContract,
+        seWork: currentSE,
+        products: []
+    };
+
+    var productItems = document.getElementsByClassName('product-item');
+    for (var i = 0; i < productItems.length; i++) {
+        var quantity = parseInt(productItems[i].getElementsByClassName('quantity-input')[0].value) || 0;
+        if (quantity > 0) {
+            var productName = productItems[i].getElementsByClassName('product-name')[0].textContent;
+            var price = parseFloat(productItems[i].getAttribute('data-price'));
+            orderData.products.push({
+                name: productName,
+                price: price,
+                quantity: quantity,
+                total: quantity * price
+            });
+        }
+    }
+
+    if (orderData.products.length === 0) {
+        alert('Please select at least one product before submitting your order.');
+        return;
+    }
+
+    var selectedBilling = document.getElementsByClassName('billing-option selected')[0].getElementsByTagName('h3')[0].textContent;
+    var selectedDiscount = document.getElementsByClassName('discount-option selected')[0].getElementsByTagName('h3')[0].textContent;
+    var selectedContract = document.getElementsByClassName('contract-option selected')[0].getElementsByTagName('h3')[0].textContent;
+    var selectedSE = document.getElementsByClassName('se-option selected')[0].getElementsByTagName('h3')[0].textContent;
+    
+    orderData.billingType = selectedBilling;
+    orderData.discountType = selectedDiscount;
+    orderData.contractType = selectedContract;
+    orderData.seWorkType = selectedSE;
+
+    var subtotal = 0;
+    for (var i = 0; i < orderData.products.length; i++) {
+        subtotal += orderData.products[i].total;
+    }
+    var discountAmount = subtotal * currentDiscount;
+    var monthlyTotal = subtotal - discountAmount;
+    var billingTotal = monthlyTotal * currentBillingPeriod;
+
+    orderData.monthlySubtotal = subtotal;
+    orderData.discountAmount = discountAmount;
+    orderData.monthlyTotal = monthlyTotal;
+    orderData.total = billingTotal;
+    orderData.timestamp = new Date().toISOString();
+
+    var form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'https://hook.us1.make.com/s9nr8q2zojfmg33oabv22e7bndwahl9r';
+    form.style.display = 'none';
+
+    for (var key in orderData) {
+        if (orderData.hasOwnProperty(key)) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            
+            if (key === 'products') {
+                input.value = JSON.stringify(orderData[key]);
+            } else {
+                input.value = orderData[key];
+            }
+            
+            form.appendChild(input);
+        }
+    }
+
+    var jsonInput = document.createElement('input');
+    jsonInput.type = 'hidden';
+    jsonInput.name = 'orderData';
+    jsonInput.value = JSON.stringify(orderData);
+    form.appendChild(jsonInput);
+
+    document.body.appendChild(form);
+    form.submit();
+    
+    alert('Order submitted successfully!');
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupEventListeners);
+} else {
+    setupEventListeners();
+}
+</script>
+</body>
+</html>
